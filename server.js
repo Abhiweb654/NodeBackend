@@ -11,12 +11,7 @@ const app=express();
 app.use(cors(),express.json());
 
 
-// // Or you can specify specific origins, like:
-// app.use(cors({
-//     origin: 'http://localhost:65375'  // Allow requests from your Angular frontend
-// }));
-//create default url 
-//   const items=[];
+
 
 app.get("/",(req,res)=>{
     res.json("welcome to first crud api");
@@ -55,21 +50,27 @@ app.get("/items",async (req, res) => {
     }
  });
 
-   app.patch('/:id',(req , res) => {     //use patch method to update value 
-    const item = items.find(i => i.id === parseInt(req.params.id));
-    if(!item){
-        return res.status(404).send('Item not found to update value');
+   app.patch('/:id', async(req , res) => {     //use patch method to update value 
+    try {
+        const item = await User.findById(req.params.id);
+        if (item == null) {
+            return res.status(404).send('Item not found');
+        }
+
+        if (req.body.name != null) {
+            item.name = req.body.name;
+        }
+        if (req.body.email != null) {
+            item.email = req.body.email;
+        }
+        if (req.body.message!= null) {
+            item.message = req.body.message;
+        }
+        const updatedItem = await item.save();
+        res.send("Item has been updated");
+    } catch (err) {
+        res.status(400).send(err);
     }
-    if(req.body.name != undefined) {        //if value of key name not a null value then update it
-        item.name=req.body.name;
-    }
-    if(req.body.email != undefined) {    //if value of key quantity not a null value then update it
-        item.email=req.body.email;
-    }
-    if(req.body.message != undefined) {    //if value of key quantity not a null value then update it
-        item.message=req.body.message;
-    }
-    res.status(200).send('value has been updated');
 });
    
 app.post("/data",async(req,res)=>{
@@ -101,11 +102,3 @@ app.listen(PORT, () => {
     console.log(`server is running on ${PORT}`)
 }
 );
-// const obj={
-//     id:items.length+1,
-//     name:req.body.name,
-//     email:req.body.email,
-//     message:req.body.message
-// }
-// items.push(obj);
-// res.send("done");
