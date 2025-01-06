@@ -83,7 +83,7 @@ app.post("/data",async(req,res)=>{
 // items.push(obj);
 // res.send("done");
 const item = new User({
-    id: await movies.countDocuments(),
+    id: await User.countDocuments(),
     name: req.body.name,
     email: req.body.email,
     message:req.body.message
